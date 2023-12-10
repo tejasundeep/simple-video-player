@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Video Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #222;
+            border-radius: 5px;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .fas {
+            color: #fff;
+        }
+
+        .controls-container {
+            position: absolute;
+            max-width: 97%;
+            width: 100%;
+            bottom: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .play-pause-button {
+            background-color: #333;
+            border: none;
+            border-radius: 50%;
+            padding: 8px 9px 6px 11px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 5px;
+            background-color: #333;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 7px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #currentTime,
+        #duration {
+            font-size: 14px;
+            margin: 0 5px;
+        }
+
+        .fullscreen-pip-buttons button {
+            background-color: #333;
+            border: none;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="video-container">
+        <video id="myVideo" src="1.mp4"></video>
+
+        <div class="controls-container">
+            <div class="control-group">
+                <button id="playButton" class="play-pause-button">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button id="pauseButton" class="play-pause-button" style="display: none;">
+                    <i class="fas fa-pause"></i>
+                </button>
+            </div>
+
+            <div class="control-group">
+                <input type="range" id="progressBar" min="0" max="100" value="0">
+                <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+            </div>
+
+            <div class="control-group">
+                <i class="fas fa-volume-up"></i>
+                <input type="range" id="volumeRange" min="0" max="1" step="0.1" value="1">
+            </div>
+
+            <div class="control-group">
+                <select id="speedSelector">
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button id="fullscreenButton">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button id="pipButton">
+                    <i class="fas fa-video"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.getElementById('myVideo');
+            const playButton = document.getElementById('playButton');
+            const pauseButton = document.getElementById('pauseButton');
+            const volumeRange = document.getElementById('volumeRange');
+            const speedSelector = document.getElementById('speedSelector');
+            const fullscreenButton = document.getElementById('fullscreenButton');
+            const pipButton = document.getElementById('pipButton');
+            const progressBar = document.getElementById('progressBar');
+            const currentTime = document.getElementById('currentTime');
+            const duration = document.getElementById('duration');
+
+            playButton.addEventListener('click', function () {
+                video.play();
+                pauseButton.style.display = 'inline-block';
+                playButton.style.display = 'none';
+            });
+
+            pauseButton.addEventListener('click', function () {
+                video.pause();
+                pauseButton.style.display = 'none';
+                playButton.style.display = 'inline-block';
+            });
+
+            volumeRange.addEventListener('input', function () {
+                video.volume = volumeRange.value;
+            });
+
+            speedSelector.addEventListener('change', function () {
+                video.playbackRate = parseFloat(speedSelector.value);
+            });
+
+            fullscreenButton.addEventListener('click', function () {
+                video.requestFullscreen();
+            });
+
+            pipButton.addEventListener('click', function () {
+                video.requestPictureInPicture();
+            });
+
+            video.addEventListener('timeupdate', function () {
+                currentTime.textContent = formatTime(video.currentTime);
+                duration.textContent = formatTime(video.duration);
+                progressBar.value = (video.currentTime / video.duration) * 100;
+            });
+
+            progressBar.addEventListener('input', function () {
+                video.currentTime = (progressBar.value / 100) * video.duration;
+            });
+
+            function formatTime(time) {
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.floor(time % 60);
+                return `${minutes}:${(seconds < 10 ? '0' : '')}${seconds}`;
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+</body>
+
+</html>
